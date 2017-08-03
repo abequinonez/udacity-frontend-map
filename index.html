@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Neighborhood Map</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+
+	<!--
+	Jasny Bootstrap: Bootstrap extension. Used in this project for its off canvas
+	navigation plugin.
+	-->
+	<link rel="stylesheet" href="css/jasny-bootstrap.min.css">
+
+	<!-- Jasny Bootstrap custom navmenu styles -->
+	<link rel="stylesheet" href="css/navmenu.css">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<div class="navmenu navmenu-default navmenu-fixed-left offcanvas-sm">
+		<a class="navmenu-brand visible-md visible-lg" href="#">Neighborhood Map</a>
+		<input type="text" name="" data-bind="textInput: textFilter, event: {keyup: filterLocations}">
+		<ul class="nav navmenu-nav" data-bind="foreach: filterList">
+			<li data-toggle="offcanvas" data-target=".navmenu"><a href="#" data-bind="text: title"></a></li>
+		</ul>
+	</div>
+
+	<div class="navbar navbar-default navbar-fixed-top hidden-md hidden-lg">
+		<button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".navmenu">
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+		</button>
+		<a class="navbar-brand" href="#">Neighborhood Map</a>
+	</div>
+
+	<div id="map"></div>
+
+	<script src="js/jquery-3.2.1.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/jasny-bootstrap.min.js"></script>
+	<script src="js/knockout-3.4.2.js"></script>
+	<script src="js/app.js"></script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWAAyAlhFQony2g76lbSCNgy2FMnmdc_g&v=3&callback=init"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+.navmenu-default,
+.navbar-default {
+	background-color: #fff;
+}
+
+.navmenu-default .navmenu-nav>li>a:hover {
+	color: #fff;
+	/*background-color: red;*/
+	background-color: #333;
+}
+
+#map {
+	/*bottom: 0;*/
+	height: 100%;
+	width: 100%;
+	/*left: 0;*/
+	/*position: absolute;*/
+	/*right: 0;*/
+}
