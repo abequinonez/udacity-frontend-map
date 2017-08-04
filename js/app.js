@@ -43,6 +43,9 @@ var defaultIcon;
 // Highlighted (mouseover) marker icon
 var highlightedIcon;
 
+// Create a variable for storing an info window
+var infoWindow;
+
 // Creates the map markers along with related functionality
 function createMarkers() {
 	// Create a bounds object for setting up the location bounds
@@ -51,6 +54,9 @@ function createMarkers() {
 	// Assign values to both marker icons (for mouseover and mouseout states)
 	defaultIcon = createMarkerIcon('ff0000');
 	highlightedIcon = createMarkerIcon('a50000');
+
+	// Assign an instance of InfoWindow() to the infoWindow variable
+	infoWindow = new google.maps.InfoWindow();
 
 	// The following for loop uses the locations array to create an array of markers on initialization
 	for (var i = 0; i < locations.length; i++) {
@@ -85,27 +91,20 @@ function createMarkers() {
 			this.setIcon(defaultIcon);
 		});
 
-		// When clicked, a marker will bounce momentarily
+		// When clicked, call the associated functions for that marker
 		marker.addListener('click', (function(marker) {
 			return function() {
+				// Bounce the marker momentarily
 				bounce(marker);
+
+				// Open and populate the info window on the marker
+				populateInfoWindow(marker, infoWindow);
 			};
 		})(marker.id));
 	}
 
 	// Finally, fit the map to the new bounds
 	map.fitBounds(bounds);
-}
-
-// Bounces a marker momentarily
-function bounce(marker) {
-	var marker = markers[marker];
-	if (marker.getAnimation() === null) {
-		marker.setAnimation(google.maps.Animation.BOUNCE);
-		setTimeout(function() {
-			marker.setAnimation(null);
-		}, 750);
-	}
 }
 
 // Creates a marker icon. Called by createMarkers().
@@ -119,6 +118,34 @@ function createMarkerIcon(color) {
 		new google.maps.Size(21, 34));
 
 	return markerImage;
+}
+
+// Bounces a marker momentarily
+function bounce(marker) {
+	var marker = markers[marker];
+	if (marker.getAnimation() === null) {
+		marker.setAnimation(google.maps.Animation.BOUNCE);
+		setTimeout(function() {
+			marker.setAnimation(null);
+		}, 750);
+	}
+}
+
+// Open and populate the info window on the marker passed in
+function populateInfoWindow(marker, infowindow) {
+	var marker = markers[marker];
+
+	// Check if the info window is not already open on this marker
+	if (infowindow.marker != marker) {
+		infowindow.marker = marker;
+		infowindow.setContent('<div>' + marker.title + '</div>');
+		infowindow.open(map, marker);
+
+		// Clear the info window marker property when closed
+		infowindow.addListener('closeclick', function() {
+			infowindow.marker = null;
+		});
+	}
 }
 
 // Declares a Knockout view model along with observables and related functions
@@ -181,10 +208,13 @@ var ViewModel = function() {
 		markers[i].setIcon(defaultIcon);
 	};
 
-	// Calls bounce function on click of location in list
-	this.triggerBounce = function(data) {
-		var i = data.id;
+	// Calls relevant click functions on click of location in list
+	this.listClick = function(data) {
+		// Bounce the marker momentarily
 		bounce(data.id);
+
+		// Open and populate the info window on the marker
+		populateInfoWindow(data.id, infoWindow);
 	}
 };
 
