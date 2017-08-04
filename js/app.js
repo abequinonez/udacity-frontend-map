@@ -86,18 +86,26 @@ function createMarkers() {
 		});
 
 		// When clicked, a marker will bounce momentarily
-		marker.addListener('click', function() {
-			if (this.getAnimation() === null) {
-				this.setAnimation(google.maps.Animation.BOUNCE);
-				setTimeout(function() {
-					this.setAnimation(null);
-				}.bind(this), 750);
-			}
-		});
+		marker.addListener('click', (function(marker) {
+			return function() {
+				bounce(marker);
+			};
+		})(marker.id));
 	}
 
 	// Finally, fit the map to the new bounds
 	map.fitBounds(bounds);
+}
+
+// Bounces a marker momentarily
+function bounce(marker) {
+	var marker = markers[marker];
+	if (marker.getAnimation() === null) {
+		marker.setAnimation(google.maps.Animation.BOUNCE);
+		setTimeout(function() {
+			marker.setAnimation(null);
+		}, 750);
+	}
 }
 
 // Creates a marker icon. Called by createMarkers().
@@ -172,6 +180,12 @@ var ViewModel = function() {
 		var i = data.id;
 		markers[i].setIcon(defaultIcon);
 	};
+
+	// Calls bounce function on click of location in list
+	this.triggerBounce = function(data) {
+		var i = data.id;
+		bounce(data.id);
+	}
 };
 
 // Initialization function to get things going. Called by the Google Maps script.
