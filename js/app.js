@@ -37,16 +37,20 @@ var locations = [
 // Create an empty array for all the location markers
 var markers = [];
 
+// Default (mouseout) marker icon
+var defaultIcon;
+
+// Highlighted (mouseover) marker icon
+var highlightedIcon;
+
 // Creates the map markers along with related functionality
 function createMarkers() {
 	// Create a bounds object for setting up the location bounds
 	var bounds = new google.maps.LatLngBounds();
 
-	// Default marker icon
-	var defaultIcon = createMarkerIcon('ff0000');
-
-	// Highlighted (mouseover) marker icon
-	var highlightedIcon = createMarkerIcon('d80000');
+	// Assign values to both marker icons (for mouseover and mouseout states)
+	defaultIcon = createMarkerIcon('ff0000');
+	highlightedIcon = createMarkerIcon('a50000');
 
 	// The following for loop uses the locations array to create an array of markers on initialization
 	for (var i = 0; i < locations.length; i++) {
@@ -156,6 +160,18 @@ var ViewModel = function() {
 			self.filterList.push(location);
 		});
 	})();
+
+	// Set corresponding marker to highlight state on mouseover of location in list
+	this.highlight = function(data) {
+		var i = data.id;
+		markers[i].setIcon(highlightedIcon);
+	};
+
+	// Set corresponding marker to default state on mouseout of location in list
+	this.removeHighlight = function(data) {
+		var i = data.id;
+		markers[i].setIcon(defaultIcon);
+	};
 };
 
 // Initialization function to get things going. Called by the Google Maps script.
