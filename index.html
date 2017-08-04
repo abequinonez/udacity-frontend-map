@@ -21,7 +21,7 @@
 		<a class="navmenu-brand visible-md visible-lg" href="#">Neighborhood Map</a>
 		<input type="text" name="" data-bind="textInput: textFilter, event: {keyup: filterLocations}">
 		<ul class="nav navmenu-nav" data-bind="foreach: filterList">
-			<li data-toggle="offcanvas" data-target=".navmenu"><a href="#" data-bind="text: title, event: {mouseover: $parent.highlight, mouseout: $parent.removeHighlight}, click: $parent.triggerBounce"></a></li>
+			<li data-toggle="offcanvas" data-target=".navmenu"><a href="#" data-bind="text: title, event: {mouseover: $parent.highlight, mouseout: $parent.removeHighlight}, click: $parent.listClick"></a></li>
 		</ul>
 	</div>
 
