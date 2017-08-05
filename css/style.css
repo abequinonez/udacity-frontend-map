@@ -1,3 +1,7 @@
+/*.body {
+	font-size: 14px;
+}*/
+
 .navmenu-default,
 .navbar-default {
 	background-color: #fff;
@@ -16,4 +20,32 @@
 	/*left: 0;*/
 	/*position: absolute;*/
 	/*right: 0;*/
+}
+
+.gm-style-iw,
+.gm-style-iw div {
+	/*left: 30px !important;*/
+	overflow: visible !important;
+}
+
+.gm-style-iw {
+	left: 27px !important;
+}
+
+.iw-content {
+	margin: 0 -8px;
+}
+
+.iw-title {
+	margin-top: 10px;
+	margin-right: 10px;
+}
+
+.wiki-content {
+	display: none;
+	/*margin: 0;*/
+	font-size: 16px;
+	line-height: 25px;
+	text-align: justify;
+	hyphens: auto;
 }
