@@ -132,20 +132,72 @@ function bounce(marker) {
 }
 
 // Open and populate the info window on the marker passed in
-function populateInfoWindow(marker, infowindow) {
+function populateInfoWindow(marker) {
 	var marker = markers[marker];
 
 	// Check if the info window is not already open on this marker
-	if (infowindow.marker != marker) {
-		infowindow.marker = marker;
-		infowindow.setContent('<div>' + marker.title + '</div>');
-		infowindow.open(map, marker);
+	if (infoWindow.marker != marker) {
+
+		// Clear the info window content
+		infoWindow.setContent('');
+		infoWindow.marker = marker;
+		infoWindow.setContent('<div class="iw-content"><h3 class="iw-title">' + marker.title + '</h3>' + '<div><p class="wiki-content"></p></div></div>');
+
+		// Request Wikipedia content
+		getWikiContent(marker);
+		infoWindow.open(map, marker);
 
 		// Clear the info window marker property when closed
-		infowindow.addListener('closeclick', function() {
-			infowindow.marker = null;
+		infoWindow.addListener('closeclick', function() {
+			infoWindow.marker = null;
 		});
 	}
+}
+
+// Wikipedia Ajax request. Gets the first section of an article. The returned data is parsed and
+// only the first paragraph is appended to the Google Maps info window. This request was developed
+// with help from Udacity's Ajax course and the MediaWiki API site. Also, I found the following
+// StackOverflow discussions very useful in developing the final request query:
+
+// https://stackoverflow.com/questions/8555320/is-there-a-clean-wikipedia-api-just-for-retrieve-content-summary
+// https://stackoverflow.com/questions/22235903/wikipedia-search-api-get-redirect-pageid
+// https://stackoverflow.com/questions/28803003/retrieve-first-paragraph-from-wikipedia-in-chinese
+function getWikiContent(marker) {
+	var wikiUrl = 'https://en.wikipedia.org/w/api.php?&format=json&action=query&prop=extracts&rawcontinue=1&exintro=&indexpageids&redirects&titles=' +
+		marker.title;
+	return $.ajax(wikiUrl, {
+		dataType: 'jsonp',
+		success: function(data) {
+			// Only proceed if the requested page exists
+			if (!(data.query.pageids[0] === '-1')) {
+				// First get the requested page's ID
+				var page = data.query.pageids[0];
+
+				// Use the page's ID to access sub objects and data. The extract is the
+				// first section of a Wikipedia article. We'll parse that to get the first
+				// paragraph.
+				var extract = data.query.pages[page].extract;
+
+				// Find the first occurrence of '</p>', the end of the first paragraph. However,
+				// we should start our search a little past the beginning of the extract, since
+				// there is the possibility of an empty paragraph early in the string.
+				var endIndex = extract.indexOf('</p>', 60) + 4;
+
+				// Create a new string containing the first paragraph.
+				var snippet = $(extract.slice(0, endIndex)).text();
+
+				// Append the paragraph to the Google Maps info window
+				$('.wiki-content').text(snippet).fadeIn();
+
+				// The following code adjusts the bounds of the map when an info window is opened
+				var zoom = map.zoom;
+				var bounds = new google.maps.LatLngBounds();
+				bounds.extend(infoWindow.position);
+				map.fitBounds(bounds);
+				map.setZoom(zoom);
+			}
+		}
+	});
 }
 
 // Declares a Knockout view model along with observables and related functions
