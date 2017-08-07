@@ -10,8 +10,10 @@ function initMap() {
 	map = new google.maps.Map(document.getElementById('map'), {
 		center: {lat: 34.6937378, lng: 135.5021651},
 		zoom: 13,
-		// styles: styles,
-		mapTypeControl: false
+		styles: mapStyles, // Map styles defined in map-styles.js
+		mapTypeControl: false,
+		fullscreenControl: false,
+		streetViewControl: false
 	});
 	createMarkers();
 }
@@ -31,7 +33,10 @@ var locations = [
 	{title: 'LiLo Coffee Roasters', location: {lat: 34.674062, lng: 135.498056}},
 	{title: 'Ijiri Coffee', location: {lat: 34.666149, lng: 135.479407}},
 	{title: 'Cocoo Cafe', location: {lat: 34.684072, lng: 135.492565}},
-	{title: 'Takamura Wine & Coffee Roasters', location: {lat: 34.687265, lng: 135.491059}}
+	{title: 'Takamura Wine & Coffee Roasters', location: {lat: 34.687265, lng: 135.491059}},
+	{title: 'Any\'s Burger', location: {lat: 34.67292979, lng: 135.51706548}},
+	{title: 'Super Potato Retro Games', location: {lat: 34.661930, lng: 135.505201}},
+	{title: 'Nipponbashi', location: {lat: 34.6595943, lng: 135.5051408}}
 ];
 
 // Create an empty array for all the location markers
@@ -56,7 +61,15 @@ function createMarkers() {
 	highlightedIcon = createMarkerIcon('a50000');
 
 	// Assign an instance of InfoWindow() to the infoWindow variable
-	infoWindow = new google.maps.InfoWindow();
+	infoWindow = new google.maps.InfoWindow({disableAutoPan: true});
+
+	// Clear the info window marker property when closed
+	infoWindow.addListener('closeclick', function() {
+		infoWindow.marker = null;
+
+		// Undim the map
+		undimMap();
+	});
 
 	// The following for loop uses the locations array to create an array of markers on initialization
 	for (var i = 0; i < locations.length; i++) {
@@ -97,6 +110,9 @@ function createMarkers() {
 				// Bounce the marker momentarily
 				bounce(marker);
 
+				// Dim the map
+				dimMap();
+
 				// Open and populate the info window on the marker
 				populateInfoWindow(marker, infoWindow);
 			};
@@ -131,7 +147,21 @@ function bounce(marker) {
 	}
 }
 
-// Open and populate the info window on the marker passed in
+// Dim the map by setting the map's styles to the dim styles declared in map-styles.js.
+// First checks whether or not the dim styles have already been set.
+function dimMap() {
+	if (!(map.styles === dimMapStyles)) {
+		map.setOptions({styles: dimMapStyles});
+	}
+}
+
+// Undim the map by setting the map's styles to the default styles declared in
+// map-styles.js
+function undimMap() {
+	map.setOptions({styles: mapStyles});
+}
+
+// Open and populate the info window on the marker passed in. Calls relevant functions.
 function populateInfoWindow(marker) {
 	var marker = markers[marker];
 
@@ -141,17 +171,50 @@ function populateInfoWindow(marker) {
 		// Clear the info window content
 		infoWindow.setContent('');
 		infoWindow.marker = marker;
-		infoWindow.setContent('<div class="iw-content"><h3 class="iw-title">' + marker.title + '</h3>' + '<div><p class="wiki-content"></p></div></div>');
+		infoWindow.setContent('<div class="iw-content"><h3 class="iw-title">' + marker.title + '</h3>' + '<div class="flickr-content"></div>' +
+			'<div><p class="wiki-content"></p></div></div>');
+
+		// Request Flickr content
+		getFlickrContent(marker);
 
 		// Request Wikipedia content
 		getWikiContent(marker);
 		infoWindow.open(map, marker);
 
-		// Clear the info window marker property when closed
-		infoWindow.addListener('closeclick', function() {
-			infoWindow.marker = null;
-		});
+		// Style the info window (add rounded corners and a box shadow)
+		$('.gm-style-iw').parent().addClass('box-shadow round-corners');
+
+		// With help from CSS-Tricks (https://css-tricks.com/useful-nth-child-recipies/) and
+		// trial and error, I was able to find the right selector
+		$('.box-shadow > div:first-child > div:nth-child(even)').addClass('round-corners');
+
+		// Pan the map according to the current marker's position and the viewport height
+		panMap(marker);
 	}
+}
+
+// Flickr Ajax request. Gets url data and other information from 5 images at most. The returned
+// data is parsed and a functional url is built. The image(s) are appended to the Google Maps
+// info window. Flickr API site used as a reference: https://www.flickr.com/services/api/
+function getFlickrContent(marker) {
+	var flickrUrl = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=cfcd1c8964bd9d9c00d0d8687cd8f5fb' +
+		'&format=json&text=' + marker.title + '&sort=interestingness-desc&per_page=5&nojsoncallback=1';
+	$.getJSON(flickrUrl, function(data) {
+		var imageArray = data.photos.photo;
+
+		// Loop through the returned data. For each image, build a url and append the image.
+		for (var i = 0; i < imageArray.length; i++) {
+			var img = imageArray[i];
+			var imgUrl = 'https://farm' + img.farm + '.staticflickr.com/' + img.server + '/' + img.id + '_' + img.secret + '_m.jpg';
+
+			// Append the image to the Google Maps info window and fade in slowly
+			$('.flickr-content').append('<img class="flickr-image" src="' + imgUrl + '" alt="">');
+			$('.flickr-image').fadeIn('slow');
+		}
+	}).fail(function() {
+		// In case the request fails
+		console.log('Request failed');
+	});	
 }
 
 // Wikipedia Ajax request. Gets the first section of an article. The returned data is parsed and
@@ -165,7 +228,7 @@ function populateInfoWindow(marker) {
 function getWikiContent(marker) {
 	var wikiUrl = 'https://en.wikipedia.org/w/api.php?&format=json&action=query&prop=extracts&rawcontinue=1&exintro=&indexpageids&redirects&titles=' +
 		marker.title;
-	return $.ajax(wikiUrl, {
+	$.ajax(wikiUrl, {
 		dataType: 'jsonp',
 		success: function(data) {
 			// Only proceed if the requested page exists
@@ -183,21 +246,46 @@ function getWikiContent(marker) {
 				// there is the possibility of an empty paragraph early in the string.
 				var endIndex = extract.indexOf('</p>', 60) + 4;
 
-				// Create a new string containing the first paragraph.
+				// Create a new string containing the first paragraph
 				var snippet = $(extract.slice(0, endIndex)).text();
 
 				// Append the paragraph to the Google Maps info window
-				$('.wiki-content').text(snippet).fadeIn();
-
-				// The following code adjusts the bounds of the map when an info window is opened
-				var zoom = map.zoom;
-				var bounds = new google.maps.LatLngBounds();
-				bounds.extend(infoWindow.position);
-				map.fitBounds(bounds);
-				map.setZoom(zoom);
+				$('.wiki-content').text(snippet).fadeIn('slow');
 			}
 		}
 	});
+}
+
+// Pans the map depending on the current marker's position and the viewport height. This method
+// allows for the opened info window to be fully visible. Developed with help from this
+// Stack Overflow discussion:
+// https://stackoverflow.com/questions/8338424/google-maps-infowindow-placed-in-center-of-the-map?rq=1
+function panMap(marker) {
+	// Get the current viewport height
+	var mapHeight = $('#map').height();
+
+	// This offset will be used to pan the map vertically
+	var offSetFromBottom = 0;
+
+	var i = 510;
+	var count = 0;
+
+	// Gradually increase the amount of offset as the viewport height increases. Basically,
+	// on smaller viewports, the map will pan so that the current marker is located at the
+	// very bottom of the map, allowing the info window just enough space to be fully
+	// visible. In contrast, on larger viewports, the marker will be located closer to the
+	// middle of the map.
+	while (i < mapHeight) {
+		count += 0.85;
+		i++;
+	}
+	offSetFromBottom += count;
+
+	// Center the map on the marker
+	map.setCenter(marker.getPosition());
+
+	// Next, using the calculation from above, pan the map vertically
+	map.panBy(0, -(mapHeight / 2 - offSetFromBottom));
 }
 
 // Declares a Knockout view model along with observables and related functions
@@ -265,9 +353,12 @@ var ViewModel = function() {
 		// Bounce the marker momentarily
 		bounce(data.id);
 
+		// Dim the map
+		dimMap();
+
 		// Open and populate the info window on the marker
 		populateInfoWindow(data.id, infoWindow);
-	}
+	};
 };
 
 // Initialization function to get things going. Called by the Google Maps script.
