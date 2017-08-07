@@ -1,7 +1,3 @@
-/*.body {
-	font-size: 14px;
-}*/
-
 .navmenu-default,
 .navbar-default {
 	background-color: #fff;
@@ -9,7 +5,6 @@
 
 .navmenu-default .navmenu-nav>li>a:hover {
 	color: #fff;
-	/*background-color: red;*/
 	background-color: #333;
 }
 
@@ -22,23 +17,55 @@
 	/*right: 0;*/
 }
 
-.gm-style-iw,
-.gm-style-iw div {
-	/*left: 30px !important;*/
-	overflow: visible !important;
+/*
+	.bow-shadow and .round-corners are applied to the divs that help make up
+	the Google Maps info window. These classes are applied to the elements
+	by jQuery when the info window is opened. Box shadow designed with help
+	from http://www.cssmatic.com/box-shadow
+*/
+.box-shadow {
+	/*-webkit-box-shadow: 7px 7px 23px -5px rgba(0,0,0,0.75);
+	-moz-box-shadow: 7px 7px 23px -5px rgba(0,0,0,0.75);
+	box-shadow: 7px 7px 23px -5px rgba(0,0,0,0.75);*/
+
+	/*-webkit-box-shadow: 6px 6px 23px -1px rgba(0,0,0,0.75);
+	-moz-box-shadow: 6px 6px 23px -1px rgba(0,0,0,0.75);
+	box-shadow: 6px 6px 23px -1px rgba(0,0,0,0.75);*/
+
+	-webkit-box-shadow: 6px 6px 23px -2px rgba(0,0,0,0.75);
+	-moz-box-shadow: 6px 6px 23px -2px rgba(0,0,0,0.75);
+	box-shadow: 6px 6px 23px -2px rgba(0,0,0,0.75);
 }
 
+.round-corners {
+	background-color: #fff !important;
+	border-radius: 8px !important;
+}
+
+/*
+	.gm-style-iw is the div that makes up the inner portion of the Google Maps
+	info window. It is applied by default.
+*/
 .gm-style-iw {
 	left: 27px !important;
+	/*left: 30px !important;*/
+	/*overflow: visible !important;*/
+	/*overflow-y: scroll !important;*/
 }
 
+/* Info window content */
 .iw-content {
-	margin: 0 -8px;
+	/*margin: 0 -8px;*/
+	max-height: 400px;
 }
 
 .iw-title {
 	margin-top: 10px;
 	margin-right: 10px;
+}
+
+.flickr-image {
+	display: none;
 }
 
 .wiki-content {
@@ -47,5 +74,18 @@
 	font-size: 16px;
 	line-height: 25px;
 	text-align: justify;
+
+	/*
+		CSS-Tricks (https://css-tricks.com/almanac/properties/h/hyphenate/)
+		used as a reference
+	*/
 	hyphens: auto;
+}
+
+/*
+	MDN (https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-scrollbar)
+	used as a reference
+*/
+::-webkit-scrollbar {
+	display: none;
 }
