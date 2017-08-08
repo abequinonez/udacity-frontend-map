@@ -57,8 +57,8 @@ function createMarkers() {
 	var bounds = new google.maps.LatLngBounds();
 
 	// Assign values to both marker icons (for mouseover and mouseout states)
-	defaultIcon = createMarkerIcon('ff0000');
-	highlightedIcon = createMarkerIcon('a50000');
+	defaultIcon = createMarkerIcon('default');
+	highlightedIcon = createMarkerIcon('hover');
 
 	// Assign an instance of InfoWindow() to the infoWindow variable
 	infoWindow = new google.maps.InfoWindow({disableAutoPan: true});
@@ -85,6 +85,7 @@ function createMarkers() {
 			title: title,
 			map: map,
 			icon: defaultIcon,
+			// optimized: false,
 			animation: google.maps.Animation.DROP,
 			id: i
 		});
@@ -124,16 +125,19 @@ function createMarkers() {
 }
 
 // Creates a marker icon. Called by createMarkers().
-function createMarkerIcon(color) {
-	var markerImage = new google.maps.MarkerImage(
-		'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + color +
-		'|40|_|%E2%80%A2',
-		new google.maps.Size(21, 34),
-		new google.maps.Point(0, 0),
-		new google.maps.Point(10, 34),
-		new google.maps.Size(21, 34));
+// The following Stack Overflow discussion helped in implementing and resizing custom marker icons:
+// https://stackoverflow.com/questions/15096461/resize-google-maps-marker-icon-image
+function createMarkerIcon(type) {
+	var markerIcon = {
+		// Custom marker icon is a modified version of Paomedia's map marker icon from IconArchive:
+		// http://www.iconarchive.com/show/small-n-flat-icons-by-paomedia/map-marker-icon.html
+		url: 'img/marker-icon-' + type + '.png',
+		scaledSize: new google.maps.Size(36, 36)
+		// , origin: new google.maps.Point(0, 0),
+		// anchor: new google.maps.Point(0, 0)
+	};
 
-	return markerImage;
+	return markerIcon;
 }
 
 // Bounces a marker momentarily
