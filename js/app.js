@@ -361,6 +361,11 @@ var ViewModel = function() {
 
 	// Calls relevant click functions on click of location in list
 	this.listClick = function(data) {
+		// Close the navmenu if the viewport is less than 992px
+		if ($(window).width() < 992) {
+			$('.navmenu').offcanvas('hide');
+		}
+
 		// Bounce the marker momentarily
 		bounce(data.id);
 
