@@ -4,6 +4,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Neighborhood Map</title>
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600|Passion+One" rel="stylesheet">
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 
 	<!--
@@ -18,8 +19,11 @@
 </head>
 <body>
 	<div class="navmenu navmenu-default navmenu-fixed-left offcanvas-sm">
-		<a class="navmenu-brand visible-md visible-lg" href="#">Neighborhood Map</a>
-		<input type="text" name="" data-bind="textInput: textFilter, event: {keyup: filterLocations}">
+		<h1 class="navmenu-title visible-md visible-lg">Osaka Places</h1>
+		<p class="intro">Welcome! If you're ever in Osaka, Japan, here are some places that I recommend visiting.</p>
+		<hr>
+		<p>Click on a location from either the list below or on the map itself. Filter out results using the input box below.</p>
+		<input type="text" name="" placeholder="Filter..." data-bind="textInput: textFilter, event: {keyup: filterLocations}">
 		<ul class="nav navmenu-nav" data-bind="foreach: filterList">
 			<!-- <li data-toggle="offcanvas" data-target=".navmenu"><a href="#" data-bind="text: title, event: {mouseover: $parent.highlight, mouseout: $parent.removeHighlight}, click: $parent.listClick"></a></li> -->
 			<li><a href="#" data-bind="text: title, event: {mouseover: $parent.highlight, mouseout: $parent.removeHighlight}, click: $parent.listClick"></a></li>
@@ -32,7 +36,7 @@
 		<span class="icon-bar"></span>
 		<span class="icon-bar"></span>
 		</button>
-		<a class="navbar-brand" href="#">Neighborhood Map</a>
+		<h2 class="navbar-title" href="#">Osaka Places</h2>
 	</div>
 
 	<div id="map"></div>
