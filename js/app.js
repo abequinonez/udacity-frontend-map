@@ -27,7 +27,7 @@ var locations = [
 	{title: 'Shinsekai', location: {lat: 34.6523835, lng: 135.5062421}},
 	{title: 'Shitennoji', location: {lat: 34.6533466, lng: 135.516491}},
 	{title: 'Osaka Aquarium Kaiyukan', location: {lat: 34.6545182, lng: 135.4289645}},
-	{title: 'Nakanoshima', location: {lat: 34.6911101, lng: 135.4923244}},
+	{title: 'Nakanoshima Park', location: {lat: 34.692600, lng: 135.507417}},
 	{title: 'Umeda Sky Building', location: {lat: 34.7052801, lng: 135.4906873}},
 	{title: 'Katsukura Tonkatsu', location: {lat: 34.7081722, lng: 135.4983075}},
 	{title: 'LiLo Coffee Roasters', location: {lat: 34.674062, lng: 135.498056}},
@@ -36,7 +36,14 @@ var locations = [
 	{title: 'Takamura Wine & Coffee Roasters', location: {lat: 34.687265, lng: 135.491059}},
 	{title: 'Any\'s Burger', location: {lat: 34.67292979, lng: 135.51706548}},
 	{title: 'Super Potato Retro Games', location: {lat: 34.661930, lng: 135.505201}},
-	{title: 'Nipponbashi', location: {lat: 34.6595943, lng: 135.5051408}}
+	{title: 'Nipponbashi', location: {lat: 34.6595943, lng: 135.5051408}},
+	{title: 'Namba Parks', location: {lat: 34.661607, lng: 135.501936}},
+	{title: 'Utsubo Park', location: {lat: 34.684268, lng: 135.490709}},
+	{title: 'Minato Bridge', location: {lat: 34.644387, lng: 135.437982}},
+	{title: 'Universal Studios Japan', location: {lat: 34.665442, lng: 135.432340}},
+	{title: 'Osaka Science Museum', location: {lat: 34.691217, lng: 135.491469}},
+	{title: 'Amerikamura', location: {lat: 34.672971, lng: 135.498218}},
+	{title: 'Yodo River', location: {lat: 34.695781, lng: 135.455042}}
 ];
 
 // Create an empty array for all the location markers
@@ -202,7 +209,7 @@ function populateInfoWindow(marker) {
 // info window. Flickr API site used as a reference: https://www.flickr.com/services/api/
 function getFlickrContent(marker) {
 	var flickrUrl = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=cfcd1c8964bd9d9c00d0d8687cd8f5fb' +
-		'&format=json&text=' + marker.title + '&sort=interestingness-desc&per_page=5&nojsoncallback=1';
+		'&format=json&tags=osaka,japan&tag_mode=all&text=' + marker.title + '&sort=relevance&per_page=5&nojsoncallback=1';
 	$.getJSON(flickrUrl, function(data) {
 		var imageArray = data.photos.photo;
 
