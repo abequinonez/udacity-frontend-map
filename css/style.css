@@ -1,4 +1,5 @@
-body {
+body,
+.iw-content {
 	font-family: 'Open Sans', sans-serif;
 }
 
@@ -112,19 +113,15 @@ input:hover {
 */
 .gm-style-iw {
 	left: 27px !important;
-	/*left: 30px !important;*/
-	/*overflow: visible !important;*/
-	/*overflow-y: scroll !important;*/
 }
 
 /* Info window content */
 .iw-content {
-	/*margin: 0 -8px;*/
 	max-height: 400px;
 }
 
 .iw-title {
-	margin-top: 10px;
+	margin-top: 5px;
 	margin-right: 10px;
 }
 
@@ -134,10 +131,9 @@ input:hover {
 
 .wiki-content {
 	display: none;
-	/*margin: 0;*/
+	margin: 10px 0 2px;
 	font-size: 16px;
 	line-height: 25px;
-	text-align: justify;
 
 	/*
 		CSS-Tricks (https://css-tricks.com/almanac/properties/h/hyphenate/)
@@ -153,3 +149,38 @@ input:hover {
 ::-webkit-scrollbar {
 	display: none;
 }
+
+@media only screen and (min-width: 700px) and (min-height: 500px) {
+	.gm-style-iw {
+		top: 18px !important;
+	}
+
+	.iw-content {
+		margin-bottom: 16px;
+		overflow-y: scroll;
+	}
+
+	.iw-title {
+		margin-top: 3px;
+	}
+}
+
+
+/*@media only screen and (max-width: 699px), only screen and (max-height: 499px) {
+	.gm-style-iw {
+		top: 10px !important;
+
+		left: 17px !important;
+	}
+
+	.gm-style-iw > div:first-child,
+	.gm-style-iw > div:first-child > div:first-child {
+		overflow: scroll !important;
+	}
+
+	.iw-content {
+		margin-bottom: 0;
+
+		margin-right: -20px;
+	}
+}*/
