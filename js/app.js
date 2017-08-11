@@ -384,4 +384,9 @@ function init() {
 
 	// Activate Knockout!
 	ko.applyBindings(new ViewModel());
+
+	// Apply event listener for text filter submit action
+	$('#hidden-btn').on('click', function() {
+		$('#text-filter').blur();
+	});
 }
