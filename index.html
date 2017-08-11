@@ -24,7 +24,15 @@
 		<p class="intro">Welcome! If you're ever in Osaka, Japan, here are some places that I recommend visiting.</p>
 		<hr>
 		<p>Click on a location from either the list below or on the map itself. Filter out results using the input box below.</p>
-		<input type="text" name="" placeholder="Filter..." data-bind="textInput: textFilter, event: {keyup: filterLocations}">
+		
+		<!--
+		Hidden submit button and no-submit action developed with help from this Stack Overflow discussion:
+		https://stackoverflow.com/questions/31305599/press-enter-on-form-input-to-make-it-lose-focus
+		-->
+		<form action="javascript:void(0);">
+			<input id="text-filter" type="text" placeholder="Filter..." data-bind="textInput: textFilter, event: {keyup: filterLocations}">
+			<input id="hidden-btn" type="submit" style="display:none;">
+		</form>
 		<ul class="nav navmenu-nav" data-bind="foreach: filterList">
 			<!-- <li data-toggle="offcanvas" data-target=".navmenu"><a href="#" data-bind="text: title, event: {mouseover: $parent.highlight, mouseout: $parent.removeHighlight}, click: $parent.listClick"></a></li> -->
 			<li><a href="#" data-bind="text: title, event: {mouseover: $parent.highlight, mouseout: $parent.removeHighlight}, click: $parent.listClick"></a></li>
