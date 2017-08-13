@@ -58,6 +58,12 @@ var highlightedIcon;
 // Create a variable for storing an info window
 var infoWindow;
 
+// Variable for storing info window place holder spaces
+var placeHolderSpaces;
+
+// Variable for storing a reference to the Owl image carousel
+var $owl;
+
 // Creates the map markers along with related functionality
 function createMarkers() {
 	// Create a bounds object for setting up the location bounds
@@ -70,9 +76,20 @@ function createMarkers() {
 	// Assign an instance of InfoWindow() to the infoWindow variable
 	infoWindow = new google.maps.InfoWindow({disableAutoPan: true});
 
+	// Placeholder spaces for use by the info window upon opening. Required in order to fill
+	// the entire width of the info window in order for the image carousel to load images
+	// correctly upon initiation.
+	placeHolderSpaces = '';
+	for (var i = 0; i < 200; i++) {
+		placeHolderSpaces += '&nbsp;';
+	}
+
 	// Clear the info window marker property when closed
 	infoWindow.addListener('closeclick', function() {
 		infoWindow.marker = null;
+
+		// Remove the viewport resize handler
+		$(window).off('resize');
 
 		// Undim the map
 		undimMap();
@@ -185,12 +202,19 @@ function populateInfoWindow(marker) {
 		infoWindow.setContent('<div class="iw-content"><h3 class="iw-title">' + marker.title + '</h3>' + '<div class="flickr-content"></div>' +
 			'<div><p class="wiki-content"></p></div></div>');
 
+		infoWindow.open(map, marker);
+
+		// Append a series of spaces in order to fill up the entire width of the info window. This is
+		// required in order for the image carousel to load appropriately-sized images upon initiating.
+		// Once the carousel has been initiated, the spaces are removed.
+		$('.flickr-content').append('<span class="spaces">' + placeHolderSpaces + '</span>');
+
 		// Request Flickr content
 		getFlickrContent(marker);
 
 		// Request Wikipedia content
 		getWikiContent(marker);
-		infoWindow.open(map, marker);
+		
 
 		// Style the info window (add rounded corners and a box shadow)
 		$('.gm-style-iw').parent().addClass('box-shadow round-corners');
@@ -201,27 +225,58 @@ function populateInfoWindow(marker) {
 
 		// Pan the map according to the current marker's position and the viewport height
 		panMap(marker);
+
+		// Handle viewport resize
+		handleResize(marker);
 	}
 }
 
-// Flickr Ajax request. Gets url data and other information from 5 images at most. The returned
+// Flickr Ajax request. Gets url data and other information from 10 images at most. The returned
 // data is parsed and a functional url is built. The image(s) are appended to the Google Maps
-// info window. Flickr API site used as a reference: https://www.flickr.com/services/api/
+// info window after being added to the Owl image carousel. Flickr API site used as a reference:
+// https://www.flickr.com/services/api/
 function getFlickrContent(marker) {
+	// var flickrUrl = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=cfcd1c8964bd9d9c00d0d8687cd8f5fb' +
+	// 	'&format=json&tags=osaka,japan&tag_mode=all&text=' + marker.title + '&sort=relevance&per_page=10&nojsoncallback=1';
+
 	var flickrUrl = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=cfcd1c8964bd9d9c00d0d8687cd8f5fb' +
-		'&format=json&tags=osaka,japan&tag_mode=all&text=' + marker.title + '&sort=relevance&per_page=5&nojsoncallback=1';
+		'&format=json&tags=osaka,japan,-hogwarts,-camera,-AJA,-takeshi+yamada,-wayside&tag_mode=all&text=' + marker.title +
+		'&sort=relevance&per_page=10&nojsoncallback=1';
 	$.getJSON(flickrUrl, function(data) {
 		var imageArray = data.photos.photo;
-
-		// Loop through the returned data. For each image, build a url and append the image.
+		var imageItems = [];
+		// Loop through the returned data. For each image, build a url and push it to the imageItems array.
 		for (var i = 0; i < imageArray.length; i++) {
 			var img = imageArray[i];
-			var imgUrl = 'https://farm' + img.farm + '.staticflickr.com/' + img.server + '/' + img.id + '_' + img.secret + '_m.jpg';
-
-			// Append the image to the Google Maps info window and fade in slowly
-			$('.flickr-content').append('<img class="flickr-image" src="' + imgUrl + '" alt="">');
-			$('.flickr-image').fadeIn('slow');
+			var imgUrl = 'https://farm' + img.farm + '.staticflickr.com/' + img.server + '/' + img.id + '_' + img.secret + '_n.jpg';
+			imageItems.push('<a href="https://www.flickr.com/photos/' + img.owner + '/' + img.id +
+				'" target="_blank"><img class="flickr-image" src="' + imgUrl + '" alt=""></a>');
 		}
+
+		// Append the Owl image carousel containing the images to the Google Maps info window
+		$('.flickr-content').append('<div class="owl-carousel owl-theme">' + imageItems.join('') + '</div>');
+
+		// Initiate the image carousel and save its reference to a variable. The reference will be used
+		// to call the carousel's refresh method by the viewport resize handler.
+		$owl = $('.owl-carousel').owlCarousel({
+			nav:true,
+			margin:10,
+			responsive:{
+				0:{
+					items:1
+				},
+				600:{
+					items:2
+				},
+				900:{
+					items:3
+				}
+			}
+		});
+
+		// Remove the placeholder spaces after the image carousel has been initiated
+		$('.spaces').remove();
+
 	}).fail(function() {
 		// In case the request fails
 		console.log('Request failed');
@@ -299,6 +354,33 @@ function panMap(marker) {
 	map.panBy(0, -(mapHeight / 2 - offSetFromBottom));
 }
 
+// Refreshes both the info window and the image carousel when an info window is open and
+// the viewport is resized. Basically the info window and the image carousel are resized
+// and adjusted for the updated viewport size.
+function handleResize(marker) {
+	// Declare a variable to hold a setTimeout reference in the resize handler
+	var timer;
+
+	// Remove any previous handler
+	$(window).off('resize');
+
+	// Handle the resize event. In an attempt at limiting the number of calls to the
+	// various functions contained in the handler, the code block is contained in a
+	// setTimeout timer. If another resize event is received within 200ms, the timer
+	// is cancelled.
+	$(window).on('resize', function() {
+		clearTimeout(timer);
+		timer = setTimeout(function() {
+			marker.setMap(null);
+			marker.setMap(map);
+			$owl.trigger('refresh.owl.carousel');
+			$('.gm-style-iw').parent().addClass('box-shadow round-corners');
+			$('.box-shadow > div:first-child > div:nth-child(even)').addClass('round-corners');
+			panMap(marker);
+		}, 200);
+	});
+}
+
 // Declares a Knockout view model along with observables and related functions
 var ViewModel = function() {
 	var self = this;
@@ -316,6 +398,7 @@ var ViewModel = function() {
 	// then the location is added to the filterList (appears on the page). Otherwise,
 	// the location is removed from the filterList (disappears from the page).
 	this.filterLocations = function() {
+		var alreadyRestyled = false;
 		for (var i = 0; i < markers.length; i++) {
 			var location = markers[i];
 			if (location.title.toLowerCase().includes(self.textFilter().toLowerCase())) {
@@ -325,6 +408,13 @@ var ViewModel = function() {
 
 					// Make the location's marker visible on the map
 					location.setMap(map);
+
+					// Restyle the info window if it's open and visible
+					if ((!alreadyRestyled) && infoWindow.marker === location && location.map !== null) {
+						$('.gm-style-iw').parent().addClass('box-shadow round-corners');
+						$('.box-shadow > div:first-child > div:nth-child(even)').addClass('round-corners');
+						alreadyRestyled = true;
+					}
 				}
 			}
 			else {
