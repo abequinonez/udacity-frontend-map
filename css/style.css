@@ -158,6 +158,8 @@ input:hover {
 	.iw-content {
 		margin-bottom: 16px;
 		overflow-y: scroll;
+
+		min-height: 300px;
 	}
 
 	.iw-title {
