@@ -29,13 +29,6 @@ var locations = [
 	{title: 'Osaka Aquarium Kaiyukan', location: {lat: 34.6545182, lng: 135.4289645}},
 	{title: 'Nakanoshima Park', location: {lat: 34.692600, lng: 135.507417}},
 	{title: 'Umeda Sky Building', location: {lat: 34.7052801, lng: 135.4906873}},
-	{title: 'Katsukura Tonkatsu', location: {lat: 34.7081722, lng: 135.4983075}},
-	{title: 'LiLo Coffee Roasters', location: {lat: 34.674062, lng: 135.498056}},
-	{title: 'Ijiri Coffee', location: {lat: 34.666149, lng: 135.479407}},
-	{title: 'Cocoo Cafe', location: {lat: 34.684072, lng: 135.492565}},
-	{title: 'Takamura Wine & Coffee Roasters', location: {lat: 34.687265, lng: 135.491059}},
-	{title: 'Any\'s Burger', location: {lat: 34.67292979, lng: 135.51706548}},
-	{title: 'Super Potato Retro Games', location: {lat: 34.661930, lng: 135.505201}},
 	{title: 'Nipponbashi', location: {lat: 34.6595943, lng: 135.5051408}},
 	{title: 'Namba Parks', location: {lat: 34.661607, lng: 135.501936}},
 	{title: 'Utsubo Park', location: {lat: 34.684268, lng: 135.490709}},
@@ -198,9 +191,14 @@ function populateInfoWindow(marker) {
 
 		// Clear the info window content
 		infoWindow.setContent('');
+
+		// Clear the image carousel if it exists
+		if ($owl !== undefined) {
+			$owl.trigger('destroy.owl.carousel');
+		}
 		infoWindow.marker = marker;
 		infoWindow.setContent('<div class="iw-content"><h3 class="iw-title">' + marker.title + '</h3>' + '<div class="flickr-content"></div>' +
-			'<div><p class="wiki-content"></p></div></div>');
+			'<div><div class="wiki-content"></div></div></div>');
 
 		infoWindow.open(map, marker);
 
@@ -248,13 +246,14 @@ function getFlickrContent(marker) {
 		// Loop through the returned data. For each image, build a url and push it to the imageItems array.
 		for (var i = 0; i < imageArray.length; i++) {
 			var img = imageArray[i];
-			var imgUrl = 'https://farm' + img.farm + '.staticflickr.com/' + img.server + '/' + img.id + '_' + img.secret + '_n.jpg';
+			var imgUrl = 'https://farm' + img.farm + '.staticflickr.com/' + img.server + '/' + img.id + '_' + img.secret + '_z.jpg';
 			imageItems.push('<a href="https://www.flickr.com/photos/' + img.owner + '/' + img.id +
 				'" target="_blank"><img class="flickr-image" src="' + imgUrl + '" alt=""></a>');
 		}
 
 		// Append the Owl image carousel containing the images to the Google Maps info window
-		$('.flickr-content').append('<div class="owl-carousel owl-theme">' + imageItems.join('') + '</div>');
+		$('.flickr-content').append('<h4 class="content-title">Relevant Flickr Photos</h4>' +
+			'<div class="owl-carousel owl-theme">' + imageItems.join('') + '</div>');
 
 		// Initiate the image carousel and save its reference to a variable. The reference will be used
 		// to call the carousel's refresh method by the viewport resize handler.
@@ -300,12 +299,13 @@ function getWikiContent(marker) {
 			// Only proceed if the requested page exists
 			if (!(data.query.pageids[0] === '-1')) {
 				// First get the requested page's ID
-				var page = data.query.pageids[0];
+				var pageId = data.query.pageids[0];
 
 				// Use the page's ID to access sub objects and data. The extract is the
 				// first section of a Wikipedia article. We'll parse that to get the first
 				// paragraph.
-				var extract = data.query.pages[page].extract;
+				var page = data.query.pages[pageId];
+				var extract = page.extract;
 
 				// Find the first occurrence of '</p>', the end of the first paragraph. However,
 				// we should start our search a little past the beginning of the extract, since
@@ -316,7 +316,9 @@ function getWikiContent(marker) {
 				var snippet = $(extract.slice(0, endIndex)).text();
 
 				// Append the paragraph to the Google Maps info window
-				$('.wiki-content').text(snippet).fadeIn('slow');
+				$('.wiki-content').html('<h4 class="content-title">Wikipedia Snippet</h4><p>' + snippet + '</p>' +
+					'<p><a href="https://en.wikipedia.org/wiki/' + page.title +
+					'" target="_blank" class="wiki-link">Continue reading on Wikipedia</a></p>').fadeIn('slow');
 			}
 		}
 	});
