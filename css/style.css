@@ -3,14 +3,27 @@ body,
 	font-family: 'Open Sans', sans-serif;
 }
 
+body {
+	/*
+	The following Stack Overflow discussion helped in hiding the scrollbar in
+	Internet Explorer:
+	https://stackoverflow.com/questions/16670931/hide-scroll-bar-but-while-still-being-able-to-scroll
+	*/
+	-ms-overflow-style: none;
+}
+
+/*
+MDN (https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-scrollbar)
+used as a reference
+*/
+::-webkit-scrollbar {
+	display: none;
+}
+
 .navmenu-default,
 .navbar-default {
 	background-color: #fff;
 }
-
-/*.navmenu-default .navmenu-nav>li>a {
-	font-weight: 600;
-}*/
 
 .navmenu-default .navmenu-nav>li>a:hover {
 	padding-left: 12px;
@@ -24,7 +37,7 @@ body,
 
 .navmenu-title,
 .navbar-title {
-	font-family: 'Passion One', cursive;
+	font-family: "Passion One", cursive;
 	color: #000 !important;
 }
 
@@ -74,19 +87,15 @@ input:hover {
 }
 
 #map {
-	/*bottom: 0;*/
 	height: 100%;
 	width: 100%;
-	/*left: 0;*/
-	/*position: absolute;*/
-	/*right: 0;*/
 }
 
 /*
-	.bow-shadow and .round-corners are applied to the divs that help make up
-	the Google Maps info window. These classes are applied to the elements
-	by jQuery when the info window is opened. Box shadow designed with help
-	from http://www.cssmatic.com/box-shadow
+.bow-shadow and .round-corners are applied to the divs that help make up
+the Google Maps info window. These classes are applied to the elements
+by jQuery when the info window is opened. Box shadow designed with help
+from http://www.cssmatic.com/box-shadow
 */
 .box-shadow {
 	/*-webkit-box-shadow: 7px 7px 23px -5px rgba(0,0,0,0.75);
@@ -108,8 +117,8 @@ input:hover {
 }
 
 /*
-	.gm-style-iw is the div that makes up the inner portion of the Google Maps
-	info window. It is applied by default.
+.gm-style-iw is the div that makes up the inner portion of the Google Maps
+info window. It is applied by default.
 */
 .gm-style-iw {
 	left: 27px !important;
@@ -123,6 +132,12 @@ input:hover {
 .iw-title {
 	margin-top: 5px;
 	margin-right: 10px;
+	font-weight: 600;
+	text-align: center;
+}
+
+.content-title {
+	text-align: center;
 }
 
 .flickr-image {
@@ -131,23 +146,27 @@ input:hover {
 
 .wiki-content {
 	display: none;
-	margin: 10px 0 2px;
+	
 	font-size: 16px;
-	line-height: 25px;
+	
 
 	/*
-		CSS-Tricks (https://css-tricks.com/almanac/properties/h/hyphenate/)
-		used as a reference
+	CSS-Tricks (https://css-tricks.com/almanac/properties/h/hyphenate/)
+	used as a reference
 	*/
 	hyphens: auto;
 }
 
-/*
-	MDN (https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-scrollbar)
-	used as a reference
-*/
-::-webkit-scrollbar {
-	display: none;
+.wiki-content p {
+	margin: 5px 0 2px;
+	line-height: 27px;
+}
+
+.wiki-link,
+.wiki-link:visited,
+.wiki-link:hover {
+	font-weight: 400;
+	color: #333;
 }
 
 @media only screen and (min-width: 700px) and (min-height: 500px) {
@@ -166,23 +185,3 @@ input:hover {
 		margin-top: 3px;
 	}
 }
-
-
-/*@media only screen and (max-width: 699px), only screen and (max-height: 499px) {
-	.gm-style-iw {
-		top: 10px !important;
-
-		left: 17px !important;
-	}
-
-	.gm-style-iw > div:first-child,
-	.gm-style-iw > div:first-child > div:first-child {
-		overflow: scroll !important;
-	}
-
-	.iw-content {
-		margin-bottom: 0;
-
-		margin-right: -20px;
-	}
-}*/
