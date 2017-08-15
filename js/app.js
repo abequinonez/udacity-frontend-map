@@ -234,51 +234,55 @@ function populateInfoWindow(marker) {
 // info window after being added to the Owl image carousel. Flickr API site used as a reference:
 // https://www.flickr.com/services/api/
 function getFlickrContent(marker) {
-	// var flickrUrl = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=cfcd1c8964bd9d9c00d0d8687cd8f5fb' +
-	// 	'&format=json&tags=osaka,japan&tag_mode=all&text=' + marker.title + '&sort=relevance&per_page=10&nojsoncallback=1';
-
 	var flickrUrl = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=cfcd1c8964bd9d9c00d0d8687cd8f5fb' +
 		'&format=json&tags=osaka,japan,-hogwarts,-camera,-AJA,-takeshi+yamada,-wayside&tag_mode=all&text=' + marker.title +
 		'&sort=relevance&per_page=10&nojsoncallback=1';
 	$.getJSON(flickrUrl, function(data) {
 		var imageArray = data.photos.photo;
-		var imageItems = [];
-		// Loop through the returned data. For each image, build a url and push it to the imageItems array.
-		for (var i = 0; i < imageArray.length; i++) {
-			var img = imageArray[i];
-			var imgUrl = 'https://farm' + img.farm + '.staticflickr.com/' + img.server + '/' + img.id + '_' + img.secret + '_z.jpg';
-			imageItems.push('<a href="https://www.flickr.com/photos/' + img.owner + '/' + img.id +
-				'" target="_blank"><img class="flickr-image" src="' + imgUrl + '" alt=""></a>');
-		}
 
-		// Append the Owl image carousel containing the images to the Google Maps info window
-		$('.flickr-content').append('<h4 class="content-title">Relevant Flickr Photos</h4>' +
-			'<div class="owl-carousel owl-theme">' + imageItems.join('') + '</div>');
-
-		// Initiate the image carousel and save its reference to a variable. The reference will be used
-		// to call the carousel's refresh method by the viewport resize handler.
-		$owl = $('.owl-carousel').owlCarousel({
-			nav:true,
-			margin:10,
-			responsive:{
-				0:{
-					items:1
-				},
-				600:{
-					items:2
-				},
-				900:{
-					items:3
-				}
+		// Check to see if any images were found
+		if (imageArray.length > 0) {
+			var imageItems = [];
+			// Loop through the returned data. For each image, build a url and push it to the imageItems array.
+			for (var i = 0; i < imageArray.length; i++) {
+				var img = imageArray[i];
+				var imgUrl = 'https://farm' + img.farm + '.staticflickr.com/' + img.server + '/' + img.id + '_' + img.secret + '_z.jpg';
+				imageItems.push('<a href="https://www.flickr.com/photos/' + img.owner + '/' + img.id +
+					'" target="_blank"><img class="flickr-image" src="' + imgUrl + '" alt=""></a>');
 			}
-		});
 
-		// Remove the placeholder spaces after the image carousel has been initiated
-		$('.spaces').remove();
+			// Append the Owl image carousel containing the images to the Google Maps info window
+			$('.flickr-content').append('<h4 class="content-title">Relevant Flickr Photos</h4>' +
+				'<div class="owl-carousel owl-theme">' + imageItems.join('') + '</div>');
 
+			// Initiate the image carousel and save its reference to a variable. The reference will be used
+			// to call the carousel's refresh method by the viewport resize handler.
+			$owl = $('.owl-carousel').owlCarousel({
+				nav:true,
+				margin:10,
+				responsive:{
+					0:{
+						items:1
+					},
+					600:{
+						items:2
+					},
+					900:{
+						items:3
+					}
+				}
+			});
+
+			// Remove the placeholder spaces after the image carousel has been initiated
+			$('.spaces').remove();
+		}
+		// If no images were found, display an error message
+		else {
+			$('.flickr-content').html('<p class="error">Hmm. No Flickr photos found. Please try reloading the page.</p>');
+		}
 	}).fail(function() {
 		// In case the request fails
-		console.log('Request failed');
+		$('.flickr-content').html('<p class="error">Flickr content failed to load. Please try reloading the page.</p>');
 	});	
 }
 
@@ -320,6 +324,14 @@ function getWikiContent(marker) {
 					'<p><a href="https://en.wikipedia.org/wiki/' + page.title +
 					'" target="_blank" class="wiki-link">Continue reading on Wikipedia</a></p>').fadeIn('slow');
 			}
+			// If the page wasn't found, display an error message
+			else {
+				$('.wiki-content').html('<p class="error">Hmm. No Wikipedia page was found. Please try reloading the page.</p>').show();
+			}
+		},
+		error: function() {
+			// In case the request fails
+			$('.wiki-content').html('<p class="error">Wikipedia content failed to load. Please try reloading the page.</p>').show();
 		}
 	});
 }
