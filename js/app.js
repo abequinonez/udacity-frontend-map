@@ -102,7 +102,6 @@ function createMarkers() {
 			title: title,
 			map: map,
 			icon: defaultIcon,
-			// optimized: false,
 			animation: google.maps.Animation.DROP,
 			id: i
 		});
@@ -150,8 +149,6 @@ function createMarkerIcon(type) {
 		// http://www.iconarchive.com/show/small-n-flat-icons-by-paomedia/map-marker-icon.html
 		url: 'img/marker-icon-' + type + '.png',
 		scaledSize: new google.maps.Size(36, 36)
-		// , origin: new google.maps.Point(0, 0),
-		// anchor: new google.maps.Point(0, 0)
 	};
 
 	return markerIcon;
@@ -212,7 +209,6 @@ function populateInfoWindow(marker) {
 
 		// Request Wikipedia content
 		getWikiContent(marker);
-		
 
 		// Style the info window (add rounded corners and a box shadow)
 		$('.gm-style-iw').parent().addClass('box-shadow round-corners');
@@ -248,7 +244,7 @@ function getFlickrContent(marker) {
 				var img = imageArray[i];
 				var imgUrl = 'https://farm' + img.farm + '.staticflickr.com/' + img.server + '/' + img.id + '_' + img.secret + '_z.jpg';
 				imageItems.push('<a href="https://www.flickr.com/photos/' + img.owner + '/' + img.id +
-					'" target="_blank"><img class="flickr-image" src="' + imgUrl + '" alt=""></a>');
+					'" target="_blank"><img src="' + imgUrl + '" alt=""></a>');
 			}
 
 			// Append the Owl image carousel containing the images to the Google Maps info window
