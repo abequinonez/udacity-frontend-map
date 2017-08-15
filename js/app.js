@@ -88,13 +88,15 @@ function createMarkers() {
 		undimMap();
 	});
 
-	// The following for loop uses the locations array to create an array of markers on initialization
-	for (var i = 0; i < locations.length; i++) {
+	// The following forEach loop iterates over the locations array to create an array of
+	// markers on initialization. This code block was refactored with help from this Udacity
+	// forum topic: https://discussions.udacity.com/t/issue-in-reviewing-my-project/303717/2
+	locations.forEach(function(location, i) {
 		// Get the position from the locations array
-		var position = locations[i].location;
+		var position = location.location;
 
 		// Get the title
-		var title = locations[i].title;
+		var title = location.title;
 
 		// Create a marker for each location
 		var marker = new google.maps.Marker({
@@ -134,7 +136,7 @@ function createMarkers() {
 				populateInfoWindow(marker, infoWindow);
 			};
 		})(marker.id));
-	}
+	});
 
 	// Finally, fit the map to the new bounds
 	map.fitBounds(bounds);
@@ -156,7 +158,7 @@ function createMarkerIcon(type) {
 
 // Bounces a marker momentarily
 function bounce(marker) {
-	var marker = markers[marker];
+	marker = markers[marker];
 	if (marker.getAnimation() === null) {
 		marker.setAnimation(google.maps.Animation.BOUNCE);
 		setTimeout(function() {
@@ -168,7 +170,7 @@ function bounce(marker) {
 // Dim the map by setting the map's styles to the dim styles declared in map-styles.js.
 // First checks whether or not the dim styles have already been set.
 function dimMap() {
-	if (!(map.styles === dimMapStyles)) {
+	if (map.styles !== dimMapStyles) {
 		map.setOptions({styles: dimMapStyles});
 	}
 }
@@ -181,7 +183,7 @@ function undimMap() {
 
 // Open and populate the info window on the marker passed in. Calls relevant functions.
 function populateInfoWindow(marker) {
-	var marker = markers[marker];
+	marker = markers[marker];
 
 	// Check if the info window is not already open on this marker
 	if (infoWindow.marker != marker) {
@@ -297,7 +299,7 @@ function getWikiContent(marker) {
 		dataType: 'jsonp',
 		success: function(data) {
 			// Only proceed if the requested page exists
-			if (!(data.query.pageids[0] === '-1')) {
+			if (data.query.pageids[0] !== '-1') {
 				// First get the requested page's ID
 				var pageId = data.query.pageids[0];
 
