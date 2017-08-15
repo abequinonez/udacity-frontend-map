@@ -489,4 +489,9 @@ function init() {
 	$('#hidden-btn').on('click', function() {
 		$('#text-filter').blur();
 	});
+
+	// Open the navmenu when the page first loads if the viewport is less than 992px
+	if ($(window).width() < 992) {
+		$('.navmenu').offcanvas('show');
+	}
 }
