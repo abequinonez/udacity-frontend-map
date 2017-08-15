@@ -12,7 +12,6 @@
 	navigation plugin.
 	-->
 	<link rel="stylesheet" href="css/jasny-bootstrap.min.css">
-	<!-- <link rel="stylesheet" href="css/jasny-bootstrap.css"> -->
 
 	<!-- Jasny Bootstrap custom navmenu styles -->
 	<link rel="stylesheet" href="css/navmenu.css">
@@ -23,6 +22,7 @@
 	<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+	<!-- Jasny Bootstrap navmenu -->
 	<div class="navmenu navmenu-default navmenu-fixed-left offcanvas-sm">
 		<h1 class="navmenu-title visible-md visible-lg">Osaka Places</h1>
 		<p class="intro">Welcome! If you're ever in Osaka, Japan, here are some places that I recommend visiting.</p>
@@ -30,19 +30,19 @@
 		<p>Click on a location from either the list below or on the map itself. Filter out results using the input box below.</p>
 		
 		<!--
-		Hidden submit button and no-submit action developed with help from this Stack Overflow discussion:
+		No-submit action developed with help from this Stack Overflow discussion:
 		https://stackoverflow.com/questions/31305599/press-enter-on-form-input-to-make-it-lose-focus
 		-->
 		<form action="javascript:void(0);">
 			<input id="text-filter" type="text" placeholder="Filter..." data-bind="textInput: textFilter, event: {keyup: filterLocations}">
-			<input id="hidden-btn" type="submit" style="display:none;">
+			<input id="hidden-btn" type="submit">
 		</form>
 		<ul class="nav navmenu-nav" data-bind="foreach: filterList">
-			<!-- <li data-toggle="offcanvas" data-target=".navmenu"><a href="#" data-bind="text: title, event: {mouseover: $parent.highlight, mouseout: $parent.removeHighlight}, click: $parent.listClick"></a></li> -->
 			<li><a href="#" data-bind="text: title, event: {mouseover: $parent.highlight, mouseout: $parent.removeHighlight}, click: $parent.listClick"></a></li>
 		</ul>
 	</div>
 
+	<!-- Jasny Bootstrap navbar -->
 	<div class="navbar navbar-default navbar-fixed-top hidden-md hidden-lg">
 		<button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target=".navmenu">
 		<span class="icon-bar"></span>
@@ -52,12 +52,11 @@
 		<h2 class="navbar-title" href="#">Osaka Places</h2>
 	</div>
 
+	<!-- Google Map container -->
 	<div id="map"></div>
-
 	<script src="js/jquery-3.2.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/jasny-bootstrap.min.js"></script>
-	<!-- <script src="js/jasny-bootstrap.js"></script> -->
 	<script src="js/knockout-3.4.2.js"></script>
 
 	<!-- Styles for the Google Map -->
