@@ -180,6 +180,12 @@ info window. It is applied by default.
 	color: #333;
 }
 
+.error {
+	margin: 5px 0 2px;
+	font-size: 16px;
+	text-align: center;
+}
+
 
 /* Media query for larger viewport */
 @media only screen and (min-width: 700px) and (min-height: 500px) {
