@@ -183,7 +183,7 @@ var dimMapStyles = mapStyles.concat(
         "elementType": "all",
         "stylers": [
             {
-                "lightness": -35
+                "lightness": -40
             }
         ]
     },
@@ -192,7 +192,7 @@ var dimMapStyles = mapStyles.concat(
         "elementType": "all",
         "stylers": [
             {
-                "saturation": -35
+                "saturation": -40
             }
         ]
     }
