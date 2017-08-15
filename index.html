@@ -4,7 +4,14 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Osaka Places</title>
-	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600|Passion+One" rel="stylesheet">
+
+	<!--
+	In order to pass HTML validation, I replaced the pipe character "|" in the following
+	Google Fonts link with the equivalent utf-8 character "%7C". The following Stack
+	Overflow discussion helped in reaching this solution:
+	https://stackoverflow.com/questions/22466913/google-fonts-url-break-html5-validation-on-w3-org
+	-->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600%7CPassion+One" rel="stylesheet">
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 
 	<!--
@@ -49,7 +56,7 @@
 		<span class="icon-bar"></span>
 		<span class="icon-bar"></span>
 		</button>
-		<h2 class="navbar-title" href="#">Osaka Places</h2>
+		<h2 class="navbar-title">Osaka Places</h2>
 	</div>
 
 	<!-- Google Map container -->
