@@ -7,3 +7,16 @@ This project, a responsive single page application featuring a map and list of l
 1. After cloning or downloading this repository, open index.html in a web browser. Alternatively, you may visit the web page [here](https://abequinonez.github.io/udacity-frontend-map). Since much of the application relies on API requests at runtime, an active internet connection is required.
 
 2. When the application successfully finishes loading, you may click on locations from either the list or on the map itself. Location results may be filtered using the input box.
+
+## Resources Used
+
+1. Google Maps API
+2. Flickr API
+3. Wikipedia API
+4. Knockout.js
+5. jQuery
+6. Jasny Bootstrap
+7. Bootstrap
+8. Owl Carousel
+9. Snazzy Maps map style
+10. IconArchive map marker icon
