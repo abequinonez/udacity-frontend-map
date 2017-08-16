@@ -1,10 +1,12 @@
 // Declare the map as a global variable
 var map;
 
-// Sets up the map for initialization. Called by init().
-// Map and associated functions were developed while following along with
-// Udacity's Google Maps APIs course and with help from Google's developer
-// site: https://developers.google.com/maps/documentation/javascript/
+/*
+Sets up the map for initialization. Called by init().
+Map and associated functions were developed while following along with
+Udacity's Google Maps APIs course and with help from Google's developer
+site: https://developers.google.com/maps/documentation/javascript/
+*/
 function initMap() {
 	// Set up the map constructor, which only requires center and zoom
 	map = new google.maps.Map(document.getElementById('map'), {
@@ -69,9 +71,11 @@ function createMarkers() {
 	// Assign an instance of InfoWindow() to the infoWindow variable
 	infoWindow = new google.maps.InfoWindow({disableAutoPan: true});
 
-	// Placeholder spaces for use by the info window upon opening. Required in order to fill
-	// the entire width of the info window in order for the image carousel to load images
-	// correctly upon initiation.
+	/*
+	Placeholder spaces for use by the info window upon opening. Required in order to fill
+	the entire width of the info window in order for the image carousel to load images
+	correctly upon initiation.
+	*/
 	placeHolderSpaces = '';
 	for (var i = 0; i < 200; i++) {
 		placeHolderSpaces += '&nbsp;';
@@ -88,9 +92,11 @@ function createMarkers() {
 		undimMap();
 	});
 
-	// The following forEach loop iterates over the locations array to create an array of
-	// markers on initialization. This code block was refactored with help from this Udacity
-	// forum topic: https://discussions.udacity.com/t/issue-in-reviewing-my-project/303717/2
+	/*
+	The following forEach loop iterates over the locations array to create an array of
+	markers on initialization. This code block was refactored with help from this Udacity
+	forum topic: https://discussions.udacity.com/t/issue-in-reviewing-my-project/303717/2
+	*/
 	locations.forEach(function(location, i) {
 		// Get the position from the locations array
 		var position = location.location;
@@ -114,8 +120,10 @@ function createMarkers() {
 		// Extend the boundaries of the map for each marker
 		bounds.extend(marker.position);
 
-		// The following two event listeners handle a marker's mouseover and mouseout
-		// behavior.
+		/*
+		The following two event listeners handle a marker's mouseover and mouseout
+		behavior.
+		*/
 		marker.addListener('mouseover', function() {
 			this.setIcon(highlightedIcon);
 		});
@@ -142,13 +150,17 @@ function createMarkers() {
 	map.fitBounds(bounds);
 }
 
-// Creates a marker icon. Called by createMarkers().
-// The following Stack Overflow discussion helped in implementing and resizing custom marker icons:
-// https://stackoverflow.com/questions/15096461/resize-google-maps-marker-icon-image
+/*
+Creates a marker icon. Called by createMarkers().
+The following Stack Overflow discussion helped in implementing and resizing custom marker icons:
+https://stackoverflow.com/questions/15096461/resize-google-maps-marker-icon-image
+*/
 function createMarkerIcon(type) {
 	var markerIcon = {
-		// Custom marker icon is a modified version of Paomedia's map marker icon from IconArchive:
-		// http://www.iconarchive.com/show/small-n-flat-icons-by-paomedia/map-marker-icon.html
+		/*
+		Custom marker icon is a modified version of Paomedia's map marker icon from IconArchive:
+		http://www.iconarchive.com/show/small-n-flat-icons-by-paomedia/map-marker-icon.html
+		*/
 		url: 'img/marker-icon-' + type + '.png',
 		scaledSize: new google.maps.Size(36, 36)
 	};
@@ -167,16 +179,20 @@ function bounce(marker) {
 	}
 }
 
-// Dim the map by setting the map's styles to the dim styles declared in map-styles.js.
-// First checks whether or not the dim styles have already been set.
+/*
+Dim the map by setting the map's styles to the dim styles declared in map-styles.js.
+First checks whether or not the dim styles have already been set.
+*/
 function dimMap() {
 	if (map.styles !== dimMapStyles) {
 		map.setOptions({styles: dimMapStyles});
 	}
 }
 
-// Undim the map by setting the map's styles to the default styles declared in
-// map-styles.js
+/*
+Undim the map by setting the map's styles to the default styles declared in
+map-styles.js
+*/
 function undimMap() {
 	map.setOptions({styles: mapStyles});
 }
@@ -198,12 +214,13 @@ function populateInfoWindow(marker) {
 		infoWindow.marker = marker;
 		infoWindow.setContent('<div class="iw-content"><h3 class="iw-title">' + marker.title + '</h3>' + '<div class="flickr-content"></div>' +
 			'<div><div class="wiki-content"></div></div></div>');
-
 		infoWindow.open(map, marker);
 
-		// Append a series of spaces in order to fill up the entire width of the info window. This is
-		// required in order for the image carousel to load appropriately-sized images upon initiating.
-		// Once the carousel has been initiated, the spaces are removed.
+		/*
+		Append a series of spaces in order to fill up the entire width of the info window. This is
+		required in order for the image carousel to load appropriately-sized images upon initiating.
+		Once the carousel has been initiated, the spaces are removed.
+		*/
 		$('.flickr-content').append('<span class="spaces">' + placeHolderSpaces + '</span>');
 
 		// Request Flickr content
@@ -212,11 +229,17 @@ function populateInfoWindow(marker) {
 		// Request Wikipedia content
 		getWikiContent(marker);
 
-		// Style the info window (add rounded corners and a box shadow)
+		/*
+		Style the info window (add rounded corners and a box shadow). I could not target this
+		element using CSS, so I had to use jQuery. This element, parent of .gm-style-iw, is
+		then used to target the div below the following line.
+		*/
 		$('.gm-style-iw').parent().addClass('box-shadow round-corners');
 
-		// With help from CSS-Tricks (https://css-tricks.com/useful-nth-child-recipies/) and
-		// trial and error, I was able to find the right selector
+		/*
+		With help from CSS-Tricks (https://css-tricks.com/useful-nth-child-recipies/) and
+		trial and error, I was able to find the right selector
+		*/
 		$('.box-shadow > div:first-child > div:nth-child(even)').addClass('round-corners');
 
 		// Pan the map according to the current marker's position and the viewport height
@@ -227,10 +250,12 @@ function populateInfoWindow(marker) {
 	}
 }
 
-// Flickr Ajax request. Gets url data and other information from 10 images at most. The returned
-// data is parsed and a functional url is built. The image(s) are appended to the Google Maps
-// info window after being added to the Owl image carousel. Flickr API site used as a reference:
-// https://www.flickr.com/services/api/
+/*
+Flickr Ajax request. Gets url data and other information from 10 images at most. The returned
+data is parsed and a functional url is built. The image(s) are appended to the Google Maps
+info window after being added to the Owl image carousel. Flickr API site used as a reference:
+https://www.flickr.com/services/api/
+*/
 function getFlickrContent(marker) {
 	var flickrUrl = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=cfcd1c8964bd9d9c00d0d8687cd8f5fb' +
 		'&format=json&tags=osaka,japan,-hogwarts,-camera,-AJA,-takeshi+yamada,-wayside&tag_mode=all&text=' + marker.title +
@@ -253,8 +278,10 @@ function getFlickrContent(marker) {
 			$('.flickr-content').append('<h4 class="content-title">Relevant Flickr Photos</h4>' +
 				'<div class="owl-carousel owl-theme">' + imageItems.join('') + '</div>');
 
-			// Initiate the image carousel and save its reference to a variable. The reference will be used
-			// to call the carousel's refresh method by the viewport resize handler.
+			/*
+			Initiate the image carousel and save its reference to a variable. The reference will be used
+			to call the carousel's refresh method by the viewport resize handler.
+			*/
 			$owl = $('.owl-carousel').owlCarousel({
 				nav:true,
 				margin:10,
@@ -284,14 +311,16 @@ function getFlickrContent(marker) {
 	});	
 }
 
-// Wikipedia Ajax request. Gets the first section of an article. The returned data is parsed and
-// only the first paragraph is appended to the Google Maps info window. This request was developed
-// with help from Udacity's Ajax course and the MediaWiki API site. Also, I found the following
-// StackOverflow discussions very useful in developing the final request query:
+/*
+Wikipedia Ajax request. Gets the first section of an article. The returned data is parsed and
+only the first paragraph is appended to the Google Maps info window. This request was developed
+with help from Udacity's Ajax course and the MediaWiki API site. Also, I found the following
+StackOverflow discussions very useful in developing the final request query:
 
-// https://stackoverflow.com/questions/8555320/is-there-a-clean-wikipedia-api-just-for-retrieve-content-summary
-// https://stackoverflow.com/questions/22235903/wikipedia-search-api-get-redirect-pageid
-// https://stackoverflow.com/questions/28803003/retrieve-first-paragraph-from-wikipedia-in-chinese
+https://stackoverflow.com/questions/8555320/is-there-a-clean-wikipedia-api-just-for-retrieve-content-summary
+https://stackoverflow.com/questions/22235903/wikipedia-search-api-get-redirect-pageid
+https://stackoverflow.com/questions/28803003/retrieve-first-paragraph-from-wikipedia-in-chinese
+*/
 function getWikiContent(marker) {
 	var wikiUrl = 'https://en.wikipedia.org/w/api.php?&format=json&action=query&prop=extracts&rawcontinue=1&exintro=&indexpageids&redirects&titles=' +
 		marker.title;
@@ -303,15 +332,19 @@ function getWikiContent(marker) {
 				// First get the requested page's ID
 				var pageId = data.query.pageids[0];
 
-				// Use the page's ID to access sub objects and data. The extract is the
-				// first section of a Wikipedia article. We'll parse that to get the first
-				// paragraph.
+				/*
+				Use the page's ID to access sub objects and data. The extract is the
+				first section of a Wikipedia article. We'll parse that to get the first
+				paragraph.
+				*/
 				var page = data.query.pages[pageId];
 				var extract = page.extract;
 
-				// Find the first occurrence of '</p>', the end of the first paragraph. However,
-				// we should start our search a little past the beginning of the extract, since
-				// there is the possibility of an empty paragraph early in the string.
+				/*
+				Find the first occurrence of '</p>', the end of the first paragraph. However,
+				we should start our search a little past the beginning of the extract, since
+				there is the possibility of an empty paragraph early in the string.
+				*/
 				var endIndex = extract.indexOf('</p>', 60) + 4;
 
 				// Create a new string containing the first paragraph
@@ -334,10 +367,12 @@ function getWikiContent(marker) {
 	});
 }
 
-// Pans the map depending on the current marker's position and the viewport height. This method
-// allows for the opened info window to be fully visible. Developed with help from this
-// Stack Overflow discussion:
-// https://stackoverflow.com/questions/8338424/google-maps-infowindow-placed-in-center-of-the-map?rq=1
+/*
+Pans the map depending on the current marker's position and the viewport height. This method
+allows for the opened info window to be fully visible. Developed with help from this
+Stack Overflow discussion:
+https://stackoverflow.com/questions/8338424/google-maps-infowindow-placed-in-center-of-the-map?rq=1
+*/
 function panMap(marker) {
 	// Get the current viewport height
 	var mapHeight = $('#map').height();
@@ -348,11 +383,13 @@ function panMap(marker) {
 	var i = 510;
 	var count = 0;
 
-	// Gradually increase the amount of offset as the viewport height increases. Basically,
-	// on smaller viewports, the map will pan so that the current marker is located at the
-	// very bottom of the map, allowing the info window just enough space to be fully
-	// visible. In contrast, on larger viewports, the marker will be located closer to the
-	// middle of the map.
+	/*
+	Gradually increase the amount of offset as the viewport height increases. Basically,
+	on smaller viewports, the map will pan so that the current marker is located at the
+	very bottom of the map, allowing the info window just enough space to be fully
+	visible. In contrast, on larger viewports, the marker will be located closer to the
+	middle of the map.
+	*/
 	while (i < mapHeight) {
 		count += 0.85;
 		i++;
@@ -366,9 +403,11 @@ function panMap(marker) {
 	map.panBy(0, -(mapHeight / 2 - offSetFromBottom));
 }
 
-// Refreshes both the info window and the image carousel when an info window is open and
-// the viewport is resized. Basically the info window and the image carousel are resized
-// and adjusted for the updated viewport size.
+/*
+Refreshes both the info window and the image carousel when an info window is open and
+the viewport is resized. Basically the info window and the image carousel are resized
+and adjusted for the updated viewport size.
+*/
 function handleResize(marker) {
 	// Declare a variable to hold a setTimeout reference in the resize handler
 	var timer;
@@ -376,10 +415,12 @@ function handleResize(marker) {
 	// Remove any previous handler
 	$(window).off('resize');
 
-	// Handle the resize event. In an attempt at limiting the number of calls to the
-	// various functions contained in the handler, the code block is contained in a
-	// setTimeout timer. If another resize event is received within 200ms, the timer
-	// is cancelled.
+	/*
+	Handle the resize event. In an attempt at limiting the number of calls to the
+	various functions contained in the handler, the code block is contained in a
+	setTimeout timer. If another resize event is received within 200ms, the timer
+	is cancelled.
+	*/
 	$(window).on('resize', function() {
 		clearTimeout(timer);
 		timer = setTimeout(function() {
@@ -400,15 +441,19 @@ var ViewModel = function() {
 	// Observable for the text input box
 	this.textFilter = ko.observable('');
 
-	// Observable array for the list of locations. Items are added and removed
-	// dynamically as the app runs.
+	/*
+	Observable array for the list of locations. Items are added and removed
+	dynamically as the app runs.
+	*/
 	this.filterList = ko.observableArray([]);
 
-	// Filters locations as the user enters text into the text input box. The entered
-	// text (textFilter) is checked against the location titles found in the markers
-	// array. If there is a match (and the location isn't already in the filterList),
-	// then the location is added to the filterList (appears on the page). Otherwise,
-	// the location is removed from the filterList (disappears from the page).
+	/*
+	Filters locations as the user enters text into the text input box. The entered
+	text (textFilter) is checked against the location titles found in the markers
+	array. If there is a match (and the location isn't already in the filterList),
+	then the location is added to the filterList (appears on the page). Otherwise,
+	the location is removed from the filterList (disappears from the page).
+	*/
 	this.filterLocations = function() {
 		var alreadyRestyled = false;
 		for (var i = 0; i < markers.length; i++) {
@@ -441,8 +486,10 @@ var ViewModel = function() {
 		return true;
 	};
 
-	// Initially, add the locations found in the markers array to the filterList.
-	// Therefore, the locations list will be populated when the page first loads.
+	/*
+	Initially, add the locations found in the markers array to the filterList.
+	Therefore, the locations list will be populated when the page first loads.
+	*/
 	this.addLocations = (function() {
 		markers.forEach(function(location) {
 			self.filterList.push(location);
@@ -496,4 +543,12 @@ function init() {
 	if ($(window).width() < 992) {
 		$('.navmenu').offcanvas('show');
 	}
+}
+
+/*
+Google Maps API request error handler. Called by the script's onerror attribute in the
+event that the request fails.
+*/
+function handleMapError() {
+	$('#map').append('<p class="error">Google map failed to load. Please try reloading the page.</p>');
 }
