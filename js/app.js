@@ -308,7 +308,7 @@ function getFlickrContent(marker) {
 	}).fail(function() {
 		// In case the request fails
 		$('.flickr-content').html('<p class="error">Flickr content failed to load. Please try reloading the page.</p>');
-	});	
+	});
 }
 
 /*
@@ -480,7 +480,7 @@ var ViewModel = function() {
 
 				// Hide the location's marker on the map
 				location.setMap(null);
-			}		
+			}
 		}
 
 		return true;
