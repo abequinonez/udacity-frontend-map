@@ -16,16 +16,26 @@
 
 	<!--
 	Jasny Bootstrap: Bootstrap extension. Used in this project for its off canvas
-	navigation plugin.
+	navigation plugin. Requires vanilla Bootstrap.
 	-->
 	<link rel="stylesheet" href="css/jasny-bootstrap.min.css">
 
-	<!-- Jasny Bootstrap custom navmenu styles -->
+	<!--
+	Jasny Bootstrap custom navmenu styles. Provided by Jasny Bootstrap as part of the
+	off canvas template.
+	-->
 	<link rel="stylesheet" href="css/navmenu.css">
 
-	<!-- Owl Image Carousel styles -->
+	<!--
+	Owl Image Carousel styles. This jQuery plugin allows for responsive and swipeable/draggable
+	images. Used in this project to display photos in the Google Maps info window.
+	-->
 	<link rel="stylesheet" href="css/owl.carousel.min.css">
+
+	<!-- Owl Image Carousel theme (includes nav controls (next buttons and dots)) -->
 	<link rel="stylesheet" href="css/owl.theme.default.min.css">
+
+	<!-- My own custom style rules -->
 	<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -37,6 +47,10 @@
 		<p>Click on a location from either the list below or on the map itself. Filter out results using the input box below.</p>
 		
 		<!--
+		In order to close the mobile keyboard when the "Go" button is tapped, I had to nest the
+		text-filter input element in a form and include a submit button. Not wanting to actually
+		submit anything (reload the page) or place a visible button on the page, I used JavaScript
+		to set the form's action to void and I used CSS to hide the submit button.
 		No-submit action developed with help from this Stack Overflow discussion:
 		https://stackoverflow.com/questions/31305599/press-enter-on-form-input-to-make-it-lose-focus
 		-->
@@ -61,6 +75,8 @@
 
 	<!-- Google Map container -->
 	<div id="map"></div>
+
+	<!-- All scripts are linked below, including the main script, app.js -->
 	<script src="js/jquery-3.2.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/jasny-bootstrap.min.js"></script>
@@ -71,7 +87,16 @@
 
 	<!-- Owl Image Carousel -->
 	<script src="js/owl.carousel.min.js"></script>
+
+	<!-- Main application script -->
 	<script src="js/app.js"></script>
-	<script async defer src="https://maps.googleapis.com/maps/api/js?v=3.29&key=AIzaSyAWAAyAlhFQony2g76lbSCNgy2FMnmdc_g&v=3&callback=init"></script>
+
+	<!--
+	As suggested by a Udacity reviewer, and with help from MDN
+	(https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onerror), I added
+	an onerror attribute to the following Google Maps API script to serve as an error handler
+	in the event that the request fails.
+	-->
+	<script async defer onerror="handleMapError()" src="https://maps.googleapis.com/maps/api/js?v=3.29&key=AIzaSyAWAAyAlhFQony2g76lbSCNgy2FMnmdc_g&callback=init"></script>
 </body>
 </html>
