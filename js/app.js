@@ -251,32 +251,24 @@ function populateInfoWindow(marker) {
 }
 
 /*
-Flickr Ajax request. Gets url data and other information from 10 images at most. The returned
-data is parsed and a functional url is built. The image(s) are appended to the Google Maps
-info window after being added to the Owl image carousel. Flickr API site used as a reference:
-https://www.flickr.com/services/api/
+Flickr Ajax request. Gets url data and other information from 25 images at most. The returned
+data is parsed and a functional url is built. Images are then loaded and examined outside of
+the DOM to determine whether or not they have landscape orientation. The image(s) that make
+the cut (up to 10) are added to the Owl image carousel contained in the Google Maps info window.
+Flickr API site used as a reference: https://www.flickr.com/services/api/
 */
 function getFlickrContent(marker) {
 	var flickrUrl = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=cfcd1c8964bd9d9c00d0d8687cd8f5fb' +
 		'&format=json&tags=osaka,japan,-hogwarts,-camera,-AJA,-takeshi+yamada,-wayside&tag_mode=all&text=' + marker.title +
-		'&sort=relevance&per_page=10&nojsoncallback=1';
+		'&sort=relevance&per_page=25&nojsoncallback=1';
 	$.getJSON(flickrUrl, function(data) {
 		var imageArray = data.photos.photo;
 
 		// Check to see if any images were found
 		if (imageArray.length > 0) {
-			var imageItems = [];
-			// Loop through the returned data. For each image, build a url and push it to the imageItems array.
-			for (var i = 0; i < imageArray.length; i++) {
-				var img = imageArray[i];
-				var imgUrl = 'https://farm' + img.farm + '.staticflickr.com/' + img.server + '/' + img.id + '_' + img.secret + '_z.jpg';
-				imageItems.push('<a href="https://www.flickr.com/photos/' + img.owner + '/' + img.id +
-					'" target="_blank"><img src="' + imgUrl + '" alt=""></a>');
-			}
-
-			// Append the Owl image carousel containing the images to the Google Maps info window
+			// Append the Owl image carousel that will hold the images to the Google Maps info window
 			$('.flickr-content').append('<h4 class="content-title">Relevant Flickr Photos</h4>' +
-				'<div class="owl-carousel owl-theme">' + imageItems.join('') + '</div>');
+				'<div class="owl-carousel owl-theme"></div>');
 
 			/*
 			Initiate the image carousel and save its reference to a variable. The reference will be used
@@ -287,7 +279,9 @@ function getFlickrContent(marker) {
 				margin:10,
 				responsive:{
 					0:{
-						items:1
+						items:1,
+						dots: false,
+						rewind: true
 					},
 					600:{
 						items:2
@@ -300,6 +294,54 @@ function getFlickrContent(marker) {
 
 			// Remove the placeholder spaces after the image carousel has been initiated
 			$('.spaces').remove();
+
+			// Array for storing temporary images loaded and examined outside of the DOM
+			var tmpImages = [];
+
+			// Variable to keep track of the number of images added to the DOM/carousel
+			var appendedImages = 0;
+
+			/*
+			Loop through the returned data. For each image, build a url/DOM element, load the image
+			outside of the DOM (to test whether or not it has landscape orientation), and only add
+			it to the DOM/carousel if it is landscape. The following Stack Overflow discussions were
+			helpful in deciding and determing how to examine images outside of the DOM before adding them:
+
+			https://stackoverflow.com/questions/7267663/javascript-calculate-image-size-after-image-load
+			https://stackoverflow.com/questions/13253825/get-height-of-hidden-image
+			*/
+			for (var i = 0; i < imageArray.length; i++) {
+				var img = imageArray[i];
+				var imgUrl = 'https://farm' + img.farm + '.staticflickr.com/' + img.server + '/' + img.id + '_' + img.secret + '.jpg';
+				var imgItem = '<a href="https://www.flickr.com/photos/' + img.owner + '/' + img.id +
+					'" target="_blank"><img class="flickr-image" src="' + imgUrl + '" alt=""></a>'
+
+				// Add a new image object to the tmpImages array
+				tmpImages.push(new Image());
+				var tmpImg = tmpImages[i];
+
+				// Set the image object's source to the current image url
+				tmpImg.src = imgUrl;
+
+				/*
+				Make sure the image has finished loading before getting its width and height.
+				We will use its width and height to determine whether or not it is landscape.
+				*/
+				tmpImg.onload = (function(imgItem) {
+					return function() {
+						// Get the image's width and height
+						var width = this.width;
+						var height = this.height;
+
+						// We are adding a max of 10 images, each of which will be landscape
+						if (width > height && appendedImages < 10) {
+							// Add the image if it passed the test
+							$owl.trigger('add.owl.carousel', [imgItem]).trigger('refresh.owl.carousel');
+							appendedImages++;
+						}
+					};
+				})(imgItem);
+			}
 		}
 		// If no images were found, display an error message
 		else {
